@@ -6,7 +6,15 @@
 #include <Adafruit_NeoPixel.h>
 #include <Fonts/FreeSans9pt7b.h>
 #include <Fonts/FreeSansBold12pt7b.h>
+
+// ESP32-C5 的 USB 与 MicroSD 的 SD_CS / GPIO13 复用。
+// 0：默认，不初始化 SD，保障 USB 枚举和串口通信。
+// 1：启用 SD 初始化；此时不要同时依赖 USB 下载、USB CDC 或串口监视器。
+#define ENABLE_MICROSD 0
+
+#if ENABLE_MICROSD
 #include <SD.h>
+#endif
 
 // ==========================================
 // 引脚定义 (请再次核对你的实际接线)
@@ -31,11 +39,13 @@
 #define TFT_RST     -1      
 #define TFT_BL      25      
 
+#if ENABLE_MICROSD
 // SPI SD卡引脚 (重点检查这几根线是否插紧)
 #define TF_CD       13     // CS (片选)
 #define TF_CMD      10     // MOSI (主出从入)
 #define TF_CLK      9      // SCK (时钟)
 #define TF_DAT      8      // MISO (主入从出)
+#endif
 
 SPIClass tftSPI(FSPI); 
 Adafruit_ST7789 tft = Adafruit_ST7789(&tftSPI, TFT_CS, TFT_DC, TFT_RST);
@@ -123,6 +133,7 @@ void playStartupMelody() {
   }
 }
 
+#if ENABLE_MICROSD
 void sdListRoot() {
   Serial.println("\n── MicroSD contents (root) ──");
   File root = SD.open("/");
@@ -145,6 +156,8 @@ void sdListRoot() {
   root.close();
   Serial.println("─────────────────────────────");
 }
+
+#endif
 
 void tftDrawColorBars() {
   int w = tft.width();
@@ -264,6 +277,7 @@ void setup() {
   playStartupMelody();
   Serial.println("[SPK] Done");
 
+#if ENABLE_MICROSD
   // ==========================================
   // 【终极优化】SD 卡初始化逻辑
   // ==========================================
@@ -287,6 +301,8 @@ void setup() {
     Serial.println("  2. SD Card format (Must be FAT32)");
     Serial.println("  3. SD Card capacity (Try <= 32GB)");
   }
+
+#endif
 
   Serial.println("[SYS] Setup complete — entering loop");
 }
