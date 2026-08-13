@@ -40,20 +40,20 @@ The current interface uses a lightweight card-style layout:
 
 ## Hardware and Software
 
-| Item                  | Configuration          |
-| --------------------- | ---------------------- |
-| Development board     | NiceMCU-C5E-DEV_2.8IPS |
-| MCU                   | ESP32-C5               |
-| Development framework | Arduino                |
-| Display controller    | ST7789                 |
-| Display resolution    | 240 × 320              |
-| Graphics library      | Adafruit GFX           |
-| Touch controller      | CST816D                |
-| Touch interface       | I2C                    |
-| Storage               | MicroSD / SPI          |
-| RGB LED               | WS2812                 |
-| Serial baud rate      | 115200                 |
-| GUI framework         | No LVGL                |
+| Item | Configuration |
+| --- | --- |
+| Development board | NiceMCU-C5E-DEV_2.8IPS |
+| MCU | ESP32-C5 |
+| Development framework | Arduino |
+| Display controller | ST7789 |
+| Display resolution | 240 × 320 |
+| Graphics library | Adafruit GFX |
+| Touch controller | CST816D |
+| Touch interface | I2C |
+| Storage | MicroSD / SPI |
+| RGB LED | WS2812 |
+| Serial baud rate | 115200 |
+| GUI framework | No LVGL |
 
 ## Arduino Library Dependencies
 
@@ -74,15 +74,15 @@ The following libraries are provided by the Arduino-ESP32 board core:
 The current program has been compiled with the following Arduino IDE
 configuration:
 
-| Option          | Configuration      |
-| --------------- | ------------------ |
-| Board           | ESP32C5 Dev Module |
-| Arduino-ESP32   | 4.0.0-alpha1       |
-| CPU Frequency   | 240 MHz            |
-| Flash Size      | 4 MB               |
-| Flash Frequency | 80 MHz             |
-| Upload Speed    | 921600             |
-| PSRAM           | Disabled           |
+| Option | Configuration |
+| --- | --- |
+| Board | ESP32C5 Dev Module |
+| Arduino-ESP32 | 4.0.0-alpha1 |
+| CPU Frequency | 240 MHz |
+| Flash Size | 4 MB |
+| Flash Frequency | 80 MHz |
+| Upload Speed | 921600 |
+| PSRAM | Disabled |
 
 A newer Arduino-ESP32 version with explicit ESP32-C5 support may also be used.
 After upgrading the board core, perform a complete rebuild and validate the
@@ -118,42 +118,51 @@ enters `loop()`.
 
 ### TFT Display
 
-| Function |     GPIO |
-| -------- | -------: |
-| TFT_DC   |        4 |
-| TFT_CS   |        5 |
-| TFT_CLK  |        6 |
-| TFT_MOSI |        7 |
-| TFT_RST  | Not used |
-| TFT_BL   |       25 |
+| Function | GPIO |
+| --- | ---: |
+| TFT_DC | 4 |
+| TFT_CS | 5 |
+| TFT_CLK | 6 |
+| TFT_MOSI | 7 |
+| TFT_RST | Not used |
+| TFT_BL | 25 |
 
 ### CST816D Touch Controller
 
-| Function |     GPIO |
-| -------- | -------: |
-| CTP_SCL  |       23 |
-| CTP_SDA  |       24 |
-| CTP_INT  |        1 |
-| CTP_RST  | Not used |
+| Function | GPIO |
+| --- | ---: |
+| CTP_SCL | 23 |
+| CTP_SDA | 24 |
+| CTP_INT | 1 |
+| CTP_RST | Not used |
 
 The CST816D I2C address is `0x15`.
 
 ### MicroSD
 
 | Function | GPIO |
-| -------- | ---: |
-| SD_CS    |   13 |
-| SD_MOSI  |   10 |
-| SD_SCK   |    9 |
-| SD_MISO  |    8 |
+| --- | ---: |
+| SD_CS | 13 |
+| SD_MOSI | 10 |
+| SD_SCK | 9 |
+| SD_MISO | 8 |
+
+## USB and MicroSD Usage Limitation
+
+The ESP32-C5 USB function is multiplexed with the MicroSD `SD_CS / GPIO13`
+pin. USB and MicroSD cannot be used at the same time.
+
+- Keep `ENABLE_MICROSD` set to `0` when uploading over USB, using USB CDC, or opening Serial Monitor. Do not initialize or access the SD card in this mode.
+- To use MicroSD, set `ENABLE_MICROSD` to `1`. Avoid using USB serial at the same time; the computer may fail to recognize the USB device or report an unknown USB device.
+- This is a hardware pin-multiplexing limitation of the development board, not a software issue caused by MicroSD card format, capacity, or wiring quality.
 
 ### Other Peripherals
 
-| Function    | GPIO |
-| ----------- | ---: |
-| WS2812 data |   27 |
-| Buzzer      |   26 |
-| User button |   28 |
+| Function | GPIO |
+| --- | ---: |
+| WS2812 data | 27 |
+| Buzzer | 26 |
+| User button | 28 |
 
 These pin assignments apply only to the C5E development board used by this
 project. Do not apply them directly to the `NiceMCU-32S-DEV_2.8IPS` or other
@@ -166,8 +175,6 @@ The program reports the following information through the serial port:
 - CST816D response status
 - ST7789 initialization status
 - Buzzer melody start and completion
-- MicroSD mount status
-- MicroSD type, capacity, and root directory contents
 - Touch coordinates and gesture value
 - RGB animation status after a button press
 
@@ -183,4 +190,3 @@ The program reports the following information through the serial port:
 - If MicroSD mounting fails, first check the wiring and card format. For
   troubleshooting, a FAT32 card with a capacity of 32 GB or less is
   recommended.
-

@@ -34,20 +34,20 @@
 
 ## 硬件与软件
 
-| 项目       | 配置                   |
-| ---------- | ---------------------- |
-| 开发板     | NiceMCU-C5E-DEV_2.8IPS |
-| MCU        | ESP32-C5               |
-| 开发框架   | Arduino                |
-| 显示驱动   | ST7789                 |
-| 显示分辨率 | 240 × 320              |
-| 图形库     | Adafruit GFX           |
-| 触摸控制器 | CST816D                |
-| 触摸接口   | I2C                    |
-| 存储       | MicroSD / SPI          |
-| RGB LED    | WS2812                 |
-| 串口波特率 | 115200                 |
-| GUI 框架   | 不使用 LVGL            |
+| 项目 | 配置 |
+| --- | --- |
+| 开发板 | NiceMCU-C5E-DEV_2.8IPS |
+| MCU | ESP32-C5 |
+| 开发框架 | Arduino |
+| 显示驱动 | ST7789 |
+| 显示分辨率 | 240 × 320 |
+| 图形库 | Adafruit GFX |
+| 触摸控制器 | CST816D |
+| 触摸接口 | I2C |
+| 存储 | MicroSD / SPI |
+| RGB LED | WS2812 |
+| 串口波特率 | 115200 |
+| GUI 框架 | 不使用 LVGL |
 
 ## Arduino 库依赖
 
@@ -67,15 +67,15 @@
 
 当前程序已经使用以下 Arduino IDE 配置完成编译：
 
-| 选项            | 配置               |
-| --------------- | ------------------ |
-| Board           | ESP32C5 Dev Module |
-| Arduino-ESP32   | 4.0.0-alpha1       |
-| CPU Frequency   | 240 MHz            |
-| Flash Size      | 4 MB               |
-| Flash Frequency | 80 MHz             |
-| Upload Speed    | 921600             |
-| PSRAM           | Disabled           |
+| 选项 | 配置 |
+| --- | --- |
+| Board | ESP32C5 Dev Module |
+| Arduino-ESP32 | 4.0.0-alpha1 |
+| CPU Frequency | 240 MHz |
+| Flash Size | 4 MB |
+| Flash Frequency | 80 MHz |
+| Upload Speed | 921600 |
+| PSRAM | Disabled |
 
 也可以尝试使用更新且明确支持 ESP32-C5 的 Arduino-ESP32 版本。升级开发板核心后，建议重新执行完整编译，并在实物开发板上验证。
 
@@ -107,42 +107,50 @@ MicroSD 初始化期间，屏幕主界面会保持显示。实时 Touch 坐标�
 
 ### TFT 显示屏
 
-| 功能     |   GPIO |
-| -------- | -----: |
-| TFT_DC   |      4 |
-| TFT_CS   |      5 |
-| TFT_CLK  |      6 |
-| TFT_MOSI |      7 |
-| TFT_RST  | 未使用 |
-| TFT_BL   |     25 |
+| 功能 | GPIO |
+| --- | ---: |
+| TFT_DC | 4 |
+| TFT_CS | 5 |
+| TFT_CLK | 6 |
+| TFT_MOSI | 7 |
+| TFT_RST | 未使用 |
+| TFT_BL | 25 |
 
 ### CST816D 触摸控制器
 
-| 功能    |   GPIO |
-| ------- | -----: |
-| CTP_SCL |     23 |
-| CTP_SDA |     24 |
-| CTP_INT |      1 |
+| 功能 | GPIO |
+| --- | ---: |
+| CTP_SCL | 23 |
+| CTP_SDA | 24 |
+| CTP_INT | 1 |
 | CTP_RST | 未使用 |
 
 CST816D 的 I2C 地址为 `0x15`。
 
 ### MicroSD
 
-| 功能    | GPIO |
-| ------- | ---: |
-| SD_CS   |   13 |
-| SD_MOSI |   10 |
-| SD_SCK  |    9 |
-| SD_MISO |    8 |
+| 功能 | GPIO |
+| --- | ---: |
+| SD_CS | 13 |
+| SD_MOSI | 10 |
+| SD_SCK | 9 |
+| SD_MISO | 8 |
+
+## USB 与 MicroSD 使用限制
+
+ESP32-C5 开发板的 USB 功能与 MicroSD 的 `SD_CS / GPIO13` 复用，二者不能同时使用。
+
+- 需要通过 USB 下载程序、打开串口监视器或使用 USB CDC 时，请保持 `ENABLE_MICROSD` 为 `0`，不要初始化或访问 SD 卡。
+- 需要使用 MicroSD 功能时，可将 `ENABLE_MICROSD` 改为 `1`；此时应避免同时使用 USB 串口，电脑端可能无法正常识别 USB 设备或出现未知 USB 设备提示。
+- 该限制来自开发板硬件引脚复用，不是 MicroSD 卡格式、容量或接线质量导致的软件异常。
 
 ### 其他外设
 
-| 功能        | GPIO |
-| ----------- | ---: |
-| WS2812 数据 |   27 |
-| 蜂鸣器      |   26 |
-| 用户按键    |   28 |
+| 功能 | GPIO |
+| --- | ---: |
+| WS2812 数据 | 27 |
+| 蜂鸣器 | 26 |
+| 用户按键 | 28 |
 
 以上引脚定义仅适用于本项目对应的 C5E 开发板，不应直接用于 `NiceMCU-32S-DEV_2.8IPS` 或其他 ESP32 开发板。
 
@@ -153,8 +161,6 @@ CST816D 的 I2C 地址为 `0x15`。
 - CST816D 是否正常响应
 - ST7789 是否完成初始化
 - 蜂鸣器提示音开始与结束
-- MicroSD 是否挂载成功
-- MicroSD 类型、容量和根目录文件
 - Touch 坐标与手势值
 - 按键控制的 RGB 动画状态
 
